@@ -39,6 +39,12 @@ test("exterior package, vehicle class and extras are preserved in the WhatsApp e
 }) => {
   await page.goto("./#pachete");
   const section = page.locator("#pachete");
+  await expect
+    .poll(() =>
+      section.evaluate((element) => element.getBoundingClientRect().top),
+    )
+    .toBeLessThanOrEqual(110);
+  await expect(page.locator("#packages-heading")).toBeInViewport();
   await expect(section.locator(".package-card")).toHaveCount(4);
   await section.getByRole("radio", { name: /Mare \/ SUV/ }).check();
   const level3 = section.getByRole("article", { name: "Nivel 3", exact: true });

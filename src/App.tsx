@@ -693,20 +693,34 @@ function App() {
     setService(null);
     setPackageService(id);
     requestAnimationFrame(() => {
-      document
-        .getElementById("pachete")
-        ?.scrollIntoView({
-          behavior: window.matchMedia("(prefers-reduced-motion: reduce)")
-            .matches
-            ? "instant"
-            : "smooth",
-        });
+      document.getElementById("pachete")?.scrollIntoView({
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          ? "instant"
+          : "smooth",
+      });
       document
         .getElementById("packages-heading")
         ?.focus({ preventScroll: true });
       window.history.replaceState(null, "", "#pachete");
     });
   };
+
+  useEffect(() => {
+    const targetId = window.location.hash.slice(1);
+    if (!targetId) return;
+    let cancelled = false;
+    // React mounts after the browser's initial fragment lookup. Wait for fonts
+    // so shared section links land in the right place with the final layout.
+    void document.fonts.ready.then(() => {
+      if (cancelled || window.location.hash.slice(1) !== targetId) return;
+      document
+        .getElementById(targetId)
+        ?.scrollIntoView({ behavior: "instant" });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 30);
