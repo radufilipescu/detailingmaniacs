@@ -41,6 +41,15 @@ test("loads the complete page, assets and navigation without errors or overflow"
   expect(images).toBe(true);
   await page.evaluate(() => scrollTo({ top: 0, behavior: "instant" }));
   if (testInfo.project.name === "mobile") {
+    const originalViewport = page.viewportSize()!;
+    await page.setViewportSize({ width: 320, height: 800 });
+    expect(
+      await page.locator("#hero-heading > span").evaluate((element) => {
+        const bounds = element.getBoundingClientRect();
+        return bounds.left >= 0 && bounds.right <= window.innerWidth;
+      }),
+    ).toBe(true);
+    await page.setViewportSize(originalViewport);
     await page.getByRole("button", { name: "Deschide meniul" }).click();
     await page
       .getByRole("navigation", { name: "Navigare mobilă" })

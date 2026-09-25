@@ -3365,7 +3365,7 @@ input[type="date"] {
     gap: 10px;
   }
   .hero h1 {
-    font-size: clamp(61px, 16.3vw, 98px);
+    font-size: clamp(50px, 16.3vw, 98px);
   }
   .hero-eyebrow {
     font-size: 7px;

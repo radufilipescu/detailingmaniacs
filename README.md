@@ -2,7 +2,9 @@
 
 A Romanian-language redesign concept for the Detailing Maniacs automotive studio in Bucharest.
 
-**Live site:** https://radufilipescu.github.io/detailingmaniacs/
+**Live site:** https://congruentvisions.com/detailingmaniacs/
+
+GitHub Pages inherits the account's existing custom domain. The standard URL, https://radufilipescu.github.io/detailingmaniacs/, redirects to the HTTPS address above.
 
 Built with React, TypeScript and Vite. The site is static and deploys to GitHub Pages automatically after its build and browser checks pass.
 
