@@ -1,0 +1,136 @@
+{
+  "exterior": {
+    "source": "https://www.detailingmaniacs.ro/polish-auto-profesional-bucuresti/",
+    "checked": "2026-09-26",
+    "names": ["Nivel 1", "Nivel 2", "Nivel 3", "Nivel 4"],
+    "basePricesBySize": [
+      [1650, 2600, 2800, 3550],
+      [1850, 2800, 3000, 3750],
+      [2350, 3350, 3550, 4250]
+    ],
+    "displayedPricesBySize": [
+      [1650, 2210, 2380, 3018],
+      [1850, 2380, 2550, 3188],
+      [2350, 2848, 3018, 3613]
+    ],
+    "sourceFeatures": [
+      ["Spalare Profesionala", 1, 1, 1, 1],
+      ["Decontaminare Chimica si Mecanica", 1, 1, 1, 1],
+      ["Dressing Anvelope", 1, 1, 1, 1],
+      ["Polish 1 pas (Doar redare luciu/lustruire)", 1, 1, 1, 1],
+      ["Polish 2 pasi (Corectie zgarieturi medii si lustruire)", 0, 1, 1, 1],
+      [
+        "Polish 3 pasi (Corectie zgarieturi adanci, medii si lustruire)",
+        0,
+        0,
+        1,
+        1
+      ],
+      [
+        "Polish 4 pasi (Corectie zgarieturi adanci, medii si lustruire)",
+        0,
+        0,
+        0,
+        1
+      ],
+      ["Polish Trimuri Lucioase", 0, 0, 1, 1],
+      ["Dressing Plastice Exterioare", 0, 0, 1, 1],
+      ["Polish Tipsuri Evacuare", 0, 0, 0, 1],
+      ["Tratament Hidrofob Prabriz, Luneta, Geamuri si Oglinzi", 0, 0, 0, 1],
+      ["Aplicare Sealant Ceramic (3 luni)", 1, 0, 0, 0],
+      ["Protectie Ceramica 2 ani (in 2 straturi)", 0, 1, 0, 0],
+      ["Protectie Ceramica 4 ani (in 2 straturi)", 0, 0, 1, 0],
+      ["Protectie Ceramica +5 ani (in 2 straturi)", 0, 0, 0, 1],
+      ["Protectie Ceramica Trimuri, Crom si Piano Black", 0, 0, 1, 1],
+      ["Prosop Microfibra pentru uscare masina", 0, 0, 0, 1]
+    ]
+  },
+  "interior": {
+    "source": "https://www.detailingmaniacs.ro/detailing-interior-auto-bucuresti/",
+    "checked": "2026-09-26",
+    "names": ["Nivel 1", "Nivel 2", "Nivel 3"],
+    "basePricesBySize": [
+      [900, 1200, 1600],
+      [1000, 1300, 1700],
+      [1100, 1400, 1800]
+    ],
+    "displayedPricesBySize": [
+      [810, 1080, 1440],
+      [900, 1170, 1530],
+      [990, 1260, 1620]
+    ],
+    "sourceFeatures": [
+      ["Spalare Profesionala Exterioara", 1, 1, 1],
+      ["Aspirare profesionala", 1, 1, 1],
+      ["Injectie extractie scaune si mocheta", 1, 1, 1],
+      ["Eliminare mirosuri", 1, 1, 1],
+      ["Curatare scaune si bancheta", 1, 1, 1],
+      ["Curatare Bord", 1, 1, 1],
+      ["Curatare plafon si stalpi", 1, 1, 1],
+      ["Curatare piele si volan", 1, 1, 1],
+      ["Curatare chedere", 1, 1, 1],
+      ["Curatare fete de usi", 1, 1, 1],
+      ["Curatare covorase (1 set)", 1, 1, 1],
+      ["Curatare portbagaj", 1, 1, 1],
+      ["Curatare mocheta si capitonaje portbagaj", 1, 1, 1],
+      ["Curatare compartiment roata de rezerva", 1, 1, 1],
+      ["Curatare geamuri si suprafete vitrare", 1, 1, 1],
+      ["Curatare tetiere", 1, 1, 1],
+      ["Igienizare cu Ozon (habitaclu si climatizare)", 0, 1, 1],
+      ["Dressing pentru plastice", 0, 1, 1],
+      ["Hidratare elemente de piele", 0, 1, 1],
+      ["Tratament hidrofob", 0, 0, 1],
+      ["Protectie ceramica (scaune fata, bacheta si cotiera)", 0, 0, 1],
+      ["Protectie ceramica plastice interioare", 0, 0, 1]
+    ]
+  },
+  "ppf": {
+    "source": "https://www.detailingmaniacs.ro/infoliere-ppf-bucuresti/",
+    "checked": "2026-09-26",
+    "names": ["PPF 1", "PPF 2", "PPF 3", "PPF 4"],
+    "basePricesBySize": [
+      [500, 1100, 6500, 14500],
+      [500, 1100, 7000, 15000],
+      [500, 1100, 7500, 17000]
+    ],
+    "displayedPricesBySize": [
+      [500, 1100, 6500, 14500],
+      [500, 1100, 7000, 15000],
+      [500, 1100, 7500, 17000]
+    ],
+    "sourceFeatures": [
+      ["Infoliere PFF faruri", 1, 1, 1, 1],
+      ["Infoliere PPF Zona incarcare portbagaj", 0, 1, 1, 1],
+      ["Infoliere PPF Zona praguri usi", 0, 1, 1, 1],
+      [
+        "Infoliere PPF Pachet frontal (Bara fata, Capota, Aripi Fata si Oglinzi)",
+        0,
+        0,
+        1,
+        1
+      ],
+      ["Infoliere completa PPF", 0, 0, 0, 1]
+    ]
+  },
+  "colantare": {
+    "source": "https://www.detailingmaniacs.ro/colantari-auto-bucuresti/",
+    "checked": "2026-09-26",
+    "names": ["Avery Dennison", "3M", "KPMF", "Oracal Premium 970"],
+    "basePricesBySize": [
+      [7000, 7500, 8000, 8500],
+      [8000, 8500, 9000, 9500],
+      [9000, 9500, 10000, 10500]
+    ],
+    "displayedPricesBySize": [
+      [7000, 7500, 8000, 8500],
+      [8000, 8500, 9000, 9500],
+      [9000, 9500, 10000, 10500]
+    ],
+    "sourceFeatures": [
+      ["Colantare integrala", 1, 0, 0, 0],
+      ["Colantare integrala", 0, 1, 0, 0],
+      ["Colantare integrala", 0, 0, 1, 0],
+      ["Colantare integrala", 0, 0, 0, 1]
+    ]
+  }
+}

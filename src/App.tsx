@@ -32,6 +32,13 @@ import {
   type Service,
   type ServiceId,
 } from "./data";
+import PackageExplorer from "./PackageExplorer";
+import {
+  includedFeatures,
+  packageCatalog,
+  packagePrice,
+  type BookingSelection,
+} from "./packages";
 
 const money = (value: number) => new Intl.NumberFormat("ro-RO").format(value);
 const whatsAppLink = (text: string) =>
@@ -126,14 +133,18 @@ function Modal({
 }
 
 function Booking({
-  initialService,
+  initialSelection,
   onClose,
 }: {
-  initialService: ServiceId;
+  initialSelection: BookingSelection;
   onClose: () => void;
 }) {
-  const [serviceId, setServiceId] = useState<ServiceId>(initialService);
-  const [size, setSize] = useState(1);
+  const [serviceId, setServiceId] = useState<ServiceId>(
+    initialSelection.serviceId,
+  );
+  const [size, setSize] = useState(initialSelection.size ?? 1);
+  const [packageId, setPackageId] = useState(initialSelection.packageId ?? "");
+  const [addonIds, setAddonIds] = useState(initialSelection.addonIds ?? []);
   const [step, setStep] = useState(1);
   const [model, setModel] = useState("");
   const [name, setName] = useState("");
@@ -142,13 +153,55 @@ function Booking({
   const [prepared, setPrepared] = useState(false);
   const stepTitle = useRef<HTMLHeadingElement>(null);
   const service = services.find((item) => item.id === serviceId)!;
-  const price = service.prices?.[size];
+  const catalog = packageCatalog[serviceId];
+  const selectedPackage = catalog?.packages.find(
+    (item) => item.id === packageId,
+  );
+  const hasVehicle = catalog?.vehicleSized !== false;
+  const extras = (catalog?.addons ?? []).filter(
+    (addon) =>
+      addonIds.includes(addon.id) && !addon.includedIn?.includes(packageId),
+  );
+  const price = selectedPackage
+    ? packagePrice(selectedPackage, size)
+    : service.prices?.[size];
+  const total =
+    price === undefined
+      ? undefined
+      : price + extras.reduce((sum, addon) => sum + addon.price, 0);
   const now = new Date();
   const minDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
   const displayDate = date
     ? new Date(`${date}T12:00:00`).toLocaleDateString("ro-RO")
     : "De stabilit împreună";
-  const message = `Bună! Sunt ${name.trim()} și aș dori o programare la Detailing Maniacs.\n\nServiciu: ${service.name}\nMașină: ${model.trim()}\nCategorie: ${carSizes[size].name}\nData preferată: ${displayDate}${notes.trim() ? `\nDetalii: ${notes.trim()}` : ""}\n\nÎmi puteți confirma disponibilitatea și oferta? Mulțumesc!`;
+  const message = [
+    `Bună! Sunt ${name.trim()} și aș dori ${hasVehicle ? "o programare" : "o înscriere la curs"} la Detailing Maniacs.`,
+    "",
+    `Serviciu: ${service.name}`,
+    selectedPackage
+      ? `Pachet: ${selectedPackage.name}`
+      : catalog
+        ? "Pachet: aș dori recomandarea echipei"
+        : null,
+    hasVehicle ? `Mașină: ${model.trim()}` : null,
+    hasVehicle ? `Categorie: ${carSizes[size].name}` : null,
+    price !== undefined
+      ? `${selectedPackage ? "Tarif pachet" : "Tarif de pornire"}: ${money(price)} lei + TVA`
+      : null,
+    ...extras.map(
+      (addon) =>
+        `Opțiune suplimentară: ${addon.name} — ${money(addon.price)} lei + TVA`,
+    ),
+    extras.length && total !== undefined
+      ? `Total orientativ: ${money(total)} lei + TVA`
+      : null,
+    `Data preferată: ${displayDate}`,
+    notes.trim() ? `Detalii: ${notes.trim()}` : null,
+    "",
+    "Îmi puteți confirma disponibilitatea și oferta? Mulțumesc!",
+  ]
+    .filter((line) => line !== null)
+    .join("\n");
 
   useEffect(() => {
     stepTitle.current?.focus({ preventScroll: true });
@@ -161,7 +214,11 @@ function Booking({
       className="booking-modal"
     >
       <div className="booking-intro">
-        <SectionLabel>HAI SĂ VORBIM DESPRE MAȘINA TA</SectionLabel>
+        <SectionLabel>
+          {hasVehicle
+            ? "HAI SĂ VORBIM DESPRE MAȘINA TA"
+            : "PASIUNEA SE ÎNVAȚĂ ÎN ATELIER"}
+        </SectionLabel>
         <h2 ref={stepTitle} tabIndex={-1}>
           {prepared ? (
             "TOTUL ÎNCEPE\nCU UN MESAJ."
@@ -169,7 +226,11 @@ function Booking({
             <>
               URMĂTORUL PAS?
               <br />
-              <span className="text-accent">O MAȘINĂ IMPECABILĂ.</span>
+              <span className="text-accent">
+                {hasVehicle
+                  ? "O MAȘINĂ IMPECABILĂ."
+                  : "PASIUNEA TA, O MESERIE."}
+              </span>
             </>
           )}
         </h2>
@@ -183,7 +244,7 @@ function Booking({
         <>
           <div className="booking-progress" aria-label={`Pasul ${step} din 2`}>
             <span className="active">
-              <b>01</b> Serviciu & mașină
+              <b>01</b> {hasVehicle ? "Pachet & mașină" : "Alege cursul"}
             </span>
             <span className={step === 2 ? "active" : ""}>
               <b>02</b> Detaliile tale
@@ -199,15 +260,19 @@ function Booking({
             {step === 1 ? (
               <div className="form-step">
                 <label className="field-label" htmlFor="service">
-                  Ce îți dorești pentru mașina ta?
+                  {hasVehicle
+                    ? "Ce îți dorești pentru mașina ta?"
+                    : "Ce serviciu te interesează?"}
                 </label>
                 <div className="select-wrap">
                   <select
                     id="service"
                     value={serviceId}
-                    onChange={(event) =>
-                      setServiceId(event.target.value as ServiceId)
-                    }
+                    onChange={(event) => {
+                      setServiceId(event.target.value as ServiceId);
+                      setPackageId("");
+                      setAddonIds([]);
+                    }}
                   >
                     {services.map((item) => (
                       <option key={item.id} value={item.id}>
@@ -217,47 +282,138 @@ function Booking({
                   </select>
                   <ChevronDown size={17} />
                 </div>
-                <fieldset className="car-fieldset">
-                  <legend>Dimensiunea mașinii</legend>
-                  <div className="car-options">
-                    {carSizes.map((car, index) => (
-                      <label
-                        key={car.name}
-                        className={size === index ? "selected" : ""}
+                {hasVehicle && (
+                  <fieldset className="car-fieldset">
+                    <legend>Dimensiunea mașinii</legend>
+                    <div className="car-options">
+                      {carSizes.map((car, index) => (
+                        <label
+                          key={car.name}
+                          className={size === index ? "selected" : ""}
+                        >
+                          <input
+                            type="radio"
+                            name="size"
+                            checked={size === index}
+                            onChange={() => setSize(index)}
+                          />
+                          <span>{car.name}</span>
+                          <small>{car.example}</small>
+                          {size === index && <Check size={14} />}
+                        </label>
+                      ))}
+                    </div>
+                  </fieldset>
+                )}
+                {catalog && (
+                  <div className="booking-package-picker">
+                    <label className="field-label" htmlFor="package">
+                      Pachetul dorit
+                    </label>
+                    <div className="select-wrap">
+                      <select
+                        id="package"
+                        value={packageId}
+                        onChange={(event) => setPackageId(event.target.value)}
                       >
-                        <input
-                          type="radio"
-                          name="size"
-                          checked={size === index}
-                          onChange={() => setSize(index)}
-                        />
-                        <span>{car.name}</span>
-                        <small>{car.example}</small>
-                        {size === index && <Check size={14} />}
-                      </label>
-                    ))}
+                        <option value="">Aș dori recomandarea echipei</option>
+                        {catalog.packages.map((item) => (
+                          <option key={item.id} value={item.id}>
+                            {item.name} — {money(packagePrice(item, size))} lei
+                            + TVA
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown size={17} />
+                    </div>
+                    {selectedPackage && (
+                      <details
+                        className="booking-package-details"
+                        key={selectedPackage.id}
+                      >
+                        <summary>
+                          Ce include {selectedPackage.name}
+                          <ChevronDown size={15} />
+                        </summary>
+                        <ul>
+                          {includedFeatures(catalog, selectedPackage.id).map(
+                            (feature) => (
+                              <li key={feature.label}>
+                                <Check size={13} />
+                                {feature.label}
+                              </li>
+                            ),
+                          )}
+                        </ul>
+                      </details>
+                    )}
+                    {catalog.addons && (
+                      <fieldset className="booking-addons">
+                        <legend>
+                          Opțiuni suplimentare <span>(opțional)</span>
+                        </legend>
+                        {catalog.addons.map((addon) => (
+                          <label key={addon.id}>
+                            <input
+                              type="checkbox"
+                              disabled={addon.includedIn?.includes(packageId)}
+                              checked={
+                                addonIds.includes(addon.id) ||
+                                Boolean(addon.includedIn?.includes(packageId))
+                              }
+                              onChange={(event) =>
+                                setAddonIds(
+                                  event.target.checked
+                                    ? [...addonIds, addon.id]
+                                    : addonIds.filter((id) => id !== addon.id),
+                                )
+                              }
+                            />
+                            <span>
+                              {addon.name}
+                              <small>
+                                {addon.includedIn?.includes(packageId)
+                                  ? "Inclus în pachet"
+                                  : `+${money(addon.price)} lei + TVA`}
+                              </small>
+                            </span>
+                          </label>
+                        ))}
+                      </fieldset>
+                    )}
                   </div>
-                </fieldset>
-                <label className="field-label" htmlFor="model">
-                  Marca și modelul <span>*</span>
-                </label>
-                <input
-                  id="model"
-                  required
-                  maxLength={80}
-                  pattern=".*\S.*"
-                  value={model}
-                  onChange={(event) => setModel(event.target.value)}
-                  placeholder="ex. BMW Seria 3, 2021"
-                  autoComplete="off"
-                />
+                )}
+                {hasVehicle && (
+                  <>
+                    <label className="field-label" htmlFor="model">
+                      Marca și modelul <span>*</span>
+                    </label>
+                    <input
+                      id="model"
+                      required
+                      maxLength={80}
+                      pattern=".*\S.*"
+                      value={model}
+                      onChange={(event) => setModel(event.target.value)}
+                      placeholder="ex. BMW Seria 3, 2021"
+                      autoComplete="off"
+                    />
+                  </>
+                )}
                 <div className="price-summary">
                   <div>
-                    <span>ESTIMARE DE PORNIRE</span>
+                    <span>
+                      {selectedPackage
+                        ? extras.length
+                          ? "TOTAL ORIENTATIV"
+                          : "TARIF PACHET"
+                        : "ESTIMARE DE PORNIRE"}
+                    </span>
                     <strong>
-                      {price ? (
+                      {total !== undefined ? (
                         <>
-                          de la {money(price)} <small>lei + TVA</small>
+                          {!selectedPackage && "de la "}
+                          {money(total)} <small>lei + TVA</small>
                         </>
                       ) : (
                         "Ofertă personalizată"
@@ -267,11 +423,12 @@ function Booking({
                   <ShieldCheck size={25} />
                 </div>
                 <p className="form-note">
-                  {serviceId === "ppf"
+                  {serviceId === "ppf" &&
+                  (!selectedPackage || selectedPackage.id === "ppf-1")
                     ? "Tariful de pornire este pentru protecție parțială. "
                     : ""}
-                  Preț orientativ. Pachetul și oferta finală se confirmă după
-                  evaluarea mașinii.
+                  Preț orientativ. Pachetul, promoțiile și oferta finală se
+                  confirmă cu echipa.
                 </p>
                 <button
                   className="button button-accent full-width"
@@ -286,9 +443,21 @@ function Booking({
                   <CircleCheck size={20} />
                   <div>
                     <strong>{service.name}</strong>
+                    {selectedPackage && (
+                      <span className="selected-package-name">
+                        {selectedPackage.name} · {money(total!)} lei + TVA
+                      </span>
+                    )}
                     <span>
-                      {model} · {carSizes[size].name}
+                      {hasVehicle
+                        ? `${model} · ${carSizes[size].name}`
+                        : "Înscriere la curs"}
                     </span>
+                    {extras.length > 0 && (
+                      <span>
+                        {extras.map((addon) => addon.name).join(" · ")}
+                      </span>
+                    )}
                   </div>
                   <button type="button" onClick={() => setStep(1)}>
                     Modifică
@@ -391,10 +560,12 @@ function ServiceModal({
   service,
   onClose,
   onBook,
+  onPackages,
 }: {
   service: Service;
   onClose: () => void;
   onBook: (id: ServiceId) => void;
+  onPackages: (id: ServiceId) => void;
 }) {
   return (
     <Modal title={service.name} onClose={onClose} className="service-modal">
@@ -415,6 +586,25 @@ function ServiceModal({
             </li>
           ))}
         </ul>
+        {packageCatalog[service.id] && (
+          <div className="service-package-invitation">
+            <div>
+              <strong>
+                {packageCatalog[service.id]!.packages.length} pachete, toate
+                detaliile.
+              </strong>
+              <p>
+                Compară ce include fiecare variantă și prețul pentru clasa ta.
+              </p>
+            </div>
+            <button
+              className="button button-accent"
+              onClick={() => onPackages(service.id)}
+            >
+              Vezi pachetele <ArrowRight size={18} />
+            </button>
+          </div>
+        )}
         <div className="service-modal-bottom">
           <div className="service-price">
             {service.prices ? (
@@ -426,7 +616,7 @@ function ServiceModal({
             )}
           </div>
           <button
-            className="button button-accent"
+            className={`button ${packageCatalog[service.id] ? "button-outline" : "button-accent"}`}
             onClick={() => onBook(service.id)}
           >
             Solicită o programare <ArrowUpRight size={18} />
@@ -442,7 +632,8 @@ function ServiceModal({
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [booking, setBooking] = useState<ServiceId | null>(null);
+  const [booking, setBooking] = useState<BookingSelection | null>(null);
+  const [packageService, setPackageService] = useState<ServiceId>("exterior");
   const [service, setService] = useState<Service | null>(null);
   const [videoOpen, setVideoOpen] = useState(false);
   const [filter, setFilter] = useState("Toate");
@@ -477,6 +668,7 @@ function App() {
   ];
   const navItems = [
     { id: "servicii", name: "Servicii" },
+    { id: "pachete", name: "Pachete" },
     { id: "despre", name: "De ce noi" },
     { id: "proiecte", name: "Proiecte" },
     { id: "contact", name: "Contact" },
@@ -488,10 +680,32 @@ function App() {
     ? filteredProjects
     : filteredProjects.slice(0, 3);
 
-  const openBooking = (id: ServiceId = "exterior") => {
+  const openBooking = (
+    id: ServiceId = "exterior",
+    selection: Partial<BookingSelection> = {},
+  ) => {
     setService(null);
     setMenuOpen(false);
-    setBooking(id);
+    setBooking({ ...selection, serviceId: id });
+  };
+
+  const openPackages = (id: ServiceId) => {
+    setService(null);
+    setPackageService(id);
+    requestAnimationFrame(() => {
+      document
+        .getElementById("pachete")
+        ?.scrollIntoView({
+          behavior: window.matchMedia("(prefers-reduced-motion: reduce)")
+            .matches
+            ? "instant"
+            : "smooth",
+        });
+      document
+        .getElementById("packages-heading")
+        ?.focus({ preventScroll: true });
+      window.history.replaceState(null, "", "#pachete");
+    });
   };
 
   useEffect(() => {
@@ -719,7 +933,10 @@ function App() {
                     <h3>{item.name}</h3>
                     <p>{item.description}</p>
                     <div className="service-card-bottom">
-                      <span>Explorează serviciul</span>
+                      <span>
+                        {packageCatalog[item.id]!.packages.length} pachete ·
+                        vezi detaliile
+                      </span>
                       <ArrowRight size={18} />
                     </div>
                   </div>
@@ -739,6 +956,14 @@ function App() {
             </div>
           </div>
         </section>
+
+        <PackageExplorer
+          serviceId={packageService}
+          onServiceChange={setPackageService}
+          onBook={({ serviceId, ...selection }) =>
+            openBooking(serviceId, selection)
+          }
+        />
 
         <section className="about section-space" id="despre">
           <div className="container about-grid">
@@ -764,7 +989,7 @@ function App() {
               </div>
             </div>
             <div className="about-copy reveal">
-              <SectionLabel>02 / ADN-UL NOSTRU</SectionLabel>
+              <SectionLabel>03 / ADN-UL NOSTRU</SectionLabel>
               <h2>
                 UNII ÎI SPUN
                 <br />
@@ -807,7 +1032,7 @@ function App() {
           <div className="container">
             <div className="section-heading reveal">
               <div>
-                <SectionLabel>03 / FAPTE, NU DOAR CUVINTE</SectionLabel>
+                <SectionLabel>04 / FAPTE, NU DOAR CUVINTE</SectionLabel>
                 <h2>
                   REZULTATUL?
                   <br />
@@ -1231,13 +1456,14 @@ function App() {
         </Modal>
       )}
       {booking && (
-        <Booking initialService={booking} onClose={() => setBooking(null)} />
+        <Booking initialSelection={booking} onClose={() => setBooking(null)} />
       )}
       {service && (
         <ServiceModal
           service={service}
           onClose={() => setService(null)}
           onBook={openBooking}
+          onPackages={openPackages}
         />
       )}
       {videoOpen && (

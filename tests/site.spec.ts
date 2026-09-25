@@ -53,7 +53,7 @@ test("loads the complete page, assets and navigation without errors or overflow"
     await page.getByRole("button", { name: "Deschide meniul" }).click();
     await page
       .getByRole("navigation", { name: "Navigare mobilă" })
-      .getByRole("link", { name: "03 Proiecte" })
+      .getByRole("link", { name: /Proiecte/ })
       .click();
   } else {
     await page

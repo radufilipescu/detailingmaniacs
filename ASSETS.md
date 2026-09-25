@@ -6,16 +6,24 @@ The user requested this concept while with the owner of Detailing Maniacs. Brand
 
 Contact, address and legal name: https://www.detailingmaniacs.ro/contact/
 
-Service descriptions and reference prices, checked 25 September 2026:
+Service descriptions, complete package tables and prices, checked 26 September 2026:
 
 - Exterior: https://www.detailingmaniacs.ro/polish-auto-profesional-bucuresti/
 - Interior: https://www.detailingmaniacs.ro/detailing-interior-auto-bucuresti/
 - PPF: https://www.detailingmaniacs.ro/infoliere-ppf-bucuresti/
 - Wrapping: https://www.detailingmaniacs.ro/colantari-auto-bucuresti/
 - Headlights: https://www.detailingmaniacs.ro/polish-faruri-bucuresti/
+- Engine: https://www.detailingmaniacs.ro/detailing-motor-bucuresti/
+- Training: https://www.detailingmaniacs.ro/curs-detailing-auto-bucuresti/
 - Other services: https://www.detailingmaniacs.ro/servicii/
 
-Interior prices use the advertised starting prices visible on the source at the time of checking. All displayed prices exclude VAT and are estimates subject to evaluation. PPF starts at partial coverage, not a complete vehicle wrap. No aggregate Google rating, review count, guaranteed turnaround, or live availability has been invented.
+Package inclusions were extracted from the original pages' `tableData` arrays and checked against their rendered comparison tables. All 17 exterior feature rows, 22 interior rows and 5 PPF rows are preserved, with spelling and diacritics normalized. The four identical wrapping rows were consolidated into one row, with the actual film brands retained as package names. "Avery Denisson" on the source was corrected to "Avery Dennison".
+
+Prices were checked in a browser because the original site applies discounts with JavaScript: 15% on exterior levels 2–4, no discount on exterior level 1, and 10% on all three interior levels. The redesign displays both original and discounted prices, using the same rounding to whole lei. All three vehicle categories are included. The source snapshot is saved in `tests/fixtures/original-packages.json` and tested against the catalog.
+
+The exterior extras are hydrophobic glass treatment (450 lei), Gyeon Infinite Top Coat (1,350 lei) and ceramic wheel protection including disassembly, cleaning and polishing (1,250 lei). The glass treatment is already included in exterior level 4 and is not added to its total again. Group and individual courses retain the published 5,000 / 7,000 lei prices and the original training outline.
+
+All displayed prices exclude VAT and are estimates subject to evaluation. Promotions require confirmation by the studio. PPF 1 is headlight film only; the separate polish-and-film service costs 750 lei. No aggregate Google rating, review count, guaranteed turnaround, or live availability has been invented.
 
 Customer quotations are short excerpts from the reviews displayed on the original homepage, linked to the same review URLs. The five stars belong to each displayed individual review, not an asserted aggregate score.
 

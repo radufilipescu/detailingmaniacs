@@ -153,6 +153,7 @@ export const services: Service[] = [
       "Uscare atentă",
       "Îngrijirea suprafețelor din plastic și cauciuc",
     ],
+    prices: [400, 400, 400],
   },
   {
     id: "insonorizare",
@@ -185,6 +186,7 @@ export const services: Service[] = [
       "Tehnici de polish și protecție",
       "Practică în atelier",
     ],
+    prices: [5000, 5000, 5000],
   },
 ];
 
@@ -249,7 +251,7 @@ export const faqs = [
   ],
   [
     "Cât costă un detailing?",
-    "Prețul depinde de dimensiunea mașinii, starea suprafețelor și pachetul ales. În formular poți vedea tarifele orientative de pornire, fără TVA. Devizul final se confirmă cu echipa, după evaluare, înainte de începerea lucrării.",
+    "În secțiunea Pachete poți compara toate nivelurile, serviciile incluse și prețurile pentru clasa mașinii tale, inclusiv reducerile afișate. Prețurile sunt fără TVA. Pachetul ales se păstrează în cererea de programare, iar devizul final se confirmă după evaluare.",
   ],
   [
     "Cât timp rămâne mașina în atelier?",
